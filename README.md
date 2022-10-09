@@ -1,2 +1,2 @@
 # sakao-task-6
-haskell
+haskell wtf
