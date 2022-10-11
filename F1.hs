@@ -1,34 +1,44 @@
 module F1 where
 
+import Data.List
+import Data.Text (splitOn)
+
 -- Vad ska de andra funktionernas typsignaturer vara?
--- fibs xs = [x | x <- [0..10], x ]
 
 -- make this fibs thingy
-fibs :: Integer -> Integer -> [Integer]
--- fibs 0 1 = [0, 1, 1]
-fibs 0 0 = [0, 1]
-fibs n k =  fibs (k-n) n ++ (n+k)
+fibs :: [Integer]
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
-fib :: Integer -> Integer
-fib 0 = 0
-fib 1 = 1
-fib n = fib (n-1) + fib (n-2)
+-- 0, 1                  0, 1, 1                      0, 1, 1, 2                       0, 1, 1, 2, 3
+-- 1    => 0 : 1 : [1]   1, 1     => 0 : 1 : [1, 2]   1, 1, 2    => 0 : 1 : [1, 2, 3]  1, 1, 2, 3     => 0 : 1 : [1, 2, 3, 5]
+-- 1                     1, 2                         1, 2, 3                          1, 2, 3, 5
+
+fib :: Int -> Integer
+fib n = fibs !! n -- finds index n of the fibonacci series
 
 -- test why?
+vokaler :: String
 vokaler = "aiueoyåäö"
 
-rovarsprak :: [Char] -> [Char]
-rovarsprak (x:xs) 
-    | x `elem` vokaler = x : rovarsprak xs
-    | otherwise = x:'o':x: rovarsprak xs
-rovarsprak [] = []
+rovarsprak :: Foldable t => t Char -> [Char]
+rovarsprak = concatMap (\x -> if x `elem` vokaler then [x] else [x, 'o', x])
 
 
 karpsravor :: [Char] -> [Char]
-karpsravor (x:xs) 
-    | x `elem` "aiueoyåäö" = x : karpsravor xs
-    | otherwise = x : karpsravor (drop 2 xs)
+karpsravor (x:xs)
+  | x `elem` vokaler = x : karpsravor xs
+  | otherwise = x : karpsravor (drop 2 xs)
 karpsravor [] = []
 
-medellangd s = 1.0
-skyffla s = s
+
+medellangd :: Fractional a => String -> a
+medellangd s = fromIntegral (length (concat n)) / fromIntegral (length n)
+    where n = (words s)
+
+split :: [a] -> ([a], [a])
+split (x:xs) = let (evens, odds) = split xs
+        in (x:odds, evens)
+split [] = ([], [])
+
+-- skyffla :: [a] -> [a]
+-- skyffla (x:xs) = (split x:xs)
