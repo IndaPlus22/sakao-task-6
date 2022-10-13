@@ -1,20 +1,20 @@
 module F1 where
 
 import Data.List
+import Data.Char
 import Data.Text (splitOn)
 
 -- Vad ska de andra funktionernas typsignaturer vara?
 
--- make this fibs thingy
-fibs :: [Integer]
-fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+fib :: Integer -> Integer
+fib 0 = 0
+fib 1 = 1
+fib x =
+  let getfib n k i
+        | i == x = k
+        | otherwise = getfib k (n + k) (i + 1)
+  in getfib 0 1 1
 
--- 0, 1                  0, 1, 1                      0, 1, 1, 2                       0, 1, 1, 2, 3
--- 1    => 0 : 1 : [1]   1, 1     => 0 : 1 : [1, 2]   1, 1, 2    => 0 : 1 : [1, 2, 3]  1, 1, 2, 3     => 0 : 1 : [1, 2, 3, 5]
--- 1                     1, 2                         1, 2, 3                          1, 2, 3, 5
-
-fib :: Int -> Integer
-fib n = fibs !! n -- finds index n of the fibonacci series
 
 -- test why?
 vokaler :: String
@@ -23,22 +23,30 @@ vokaler = "aiueoyåäö"
 rovarsprak :: Foldable t => t Char -> [Char]
 rovarsprak = concatMap (\x -> if x `elem` vokaler then [x] else [x, 'o', x])
 
-
 karpsravor :: [Char] -> [Char]
-karpsravor (x:xs)
+karpsravor (x : xs)
   | x `elem` vokaler = x : karpsravor xs
   | otherwise = x : karpsravor (drop 2 xs)
 karpsravor [] = []
 
+remove :: [Char] -> [Char]
+remove (x:xs)
+  | isAlpha x  = 'a' : remove xs
+  | otherwise = ' ' : remove xs
+  -- | otherwise = remove xs
+remove [] = []
 
-medellangd :: Fractional a => String -> a
+medellangd :: String -> Double
 medellangd s = fromIntegral (length (concat n)) / fromIntegral (length n)
-    where n = (words s)
+  where
+    n = words (remove s)
 
-split :: [a] -> ([a], [a])
-split (x:xs) = let (evens, odds) = split xs
-        in (x:odds, evens)
-split [] = ([], [])
+skipone :: [a] -> [a]
+skipone (x : xs) = x : skipone (drop 1 xs)
+skipone [] = []
 
--- skyffla :: [a] -> [a]
--- skyffla (x:xs) = (split x:xs)
+skyffla :: [a] -> [a]
+skyffla (x : xs)
+  | length (x : xs) == 1 = x : xs
+  | otherwise = skipone (x : xs) ++ skyffla (skipone xs)
+skyffla [] = []
